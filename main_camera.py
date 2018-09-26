@@ -1,0 +1,107 @@
+import sys
+sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/camera')
+sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/awsS3Helper')
+sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/awsRekognitionHelper')
+sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/awsDynamoDBHelper')
+
+from camera import camera
+from awsS3Helper import awsS3Helper
+from awsRekognitionHelper import awsRekognitionHelper
+from awsDynamoDBHelper import awsDynamoDBHelper
+
+import time
+import datetime
+
+imageFileDateFormat = "%Y%m%d%H%M%S.%f"
+rootDirectory       = "/home/pi/Neil/project/"
+imageDirectory      = rootDirectory + "images/"
+videoDirectory      = rootDirectory + "video/"
+
+
+s3BucketName = "neil2-pi-bucket"
+s3BucketPrefix = "images/"
+labelConfidence = 65
+
+
+print "Running..."
+
+now = datetime.datetime.now()
+print "datetime = ", now
+
+print "Initialising camera..."
+myCamera = camera.camera()
+
+print "Initialising AWS S3..."
+myAwsS3 = awsS3Helper.awsS3Helper()
+
+print("Initialising AWS Rekognition...")
+myAwsRek = awsRekognitionHelper.awsRekognitionHelper()
+
+print("Initialising AWS DynamoDB...")
+myAwsDDb = awsDynamoDBHelper.awsDynamoDBHelper()
+
+print "Sleeping 2..."
+#time.sleep(2)
+
+print "Taking picture with current date/time..."
+now = datetime.datetime.now()
+dateTime = now.strftime(imageFileDateFormat)
+pictureFilename = "image-" + dateTime + ".jpg"
+pictureLocation = imageDirectory + pictureFilename
+objectKey = s3BucketPrefix + pictureFilename
+print "pictureFilename = ", pictureFilename
+print "pictureLocation = ", pictureLocation
+print "objectKey       = ", objectKey
+
+#filename = ""
+#filename = myCamera.takePictureFileCurrentDateTime()
+
+
+
+#myCamera.takePictureFile(pictureLocation)
+
+#print "Uploading file ", pictureFilename, " to S3 bucket ", s3BucketName, " from location ", pictureLocation, " objectKey = ", objectKey
+#myAwsS3.uploadFileToBucket(s3BucketName, filename)
+#myAwsS3.uploadFileToBucket2(s3BucketName, pictureLocation, objectKey)
+#print "S3 Upload complete..."
+
+objectKey = "images/test3.jpg"
+
+print "Getting Rekognition labels for file/object ", objectKey, " in S3 bucket ", s3BucketName
+response = myAwsRek.detectLabels(s3BucketName, objectKey, labelConfidence)
+print "Rotation :", response['OrientationCorrection']
+print "Got the following labels :"
+for label in response['Labels']:
+  print (label['Name'] + ' : ' + str(label['Confidence']))
+
+for label in response['Labels']:
+  label['Confidence'] = int(label['Confidence'])
+
+myAwsDDb.putLabelItem("20180921000101", response['Labels']);
+
+
+
+
+
+#print "Getting Rekognition text for file/object ", objectKey, " in S3 bucket ", s3BucketName
+#response = myAwsRek.detectText(s3BucketName, objectKey)
+#for label in response['TextDetections']:
+#  print (label['DetectedText'] + ' : ' + str(label['Confidence']))
+
+#print "Getting Rekognition faces for file/object ", objectKey, " in S3 bucket ", s3BucketName
+#response = myAwsRek.detectFaces(s3BucketName, objectKey)
+#print('Detected faces for ' + objectKey)
+#for label in response['FaceDetails']:
+#  print (label['Gender']['Value'], "Range",label['AgeRange']['Low'],"-",label['AgeRange']['High'], "Smile:", label['Smile']['Value'], label['Smile']['Confidence'])
+
+#print "Getting Rekognition celebrity recognition for file/object ", objectKey, " in S3 bucket ", s3BucketName
+#response = myAwsRek.recognizeCelebrities(s3BucketName, objectKey)
+#print('Detected celebrities ' + objectKey)
+#for label in response['CelebrityFaces']:
+#  print (label['Name'])
+
+
+
+
+print("exiting...")
+
