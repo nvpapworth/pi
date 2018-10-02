@@ -20,7 +20,7 @@ videoDirectory      = rootDirectory + "video/"
 
 s3BucketName = "neil2-pi-bucket"
 s3BucketPrefix = "images/"
-labelConfidence = 65
+labelConfidence = 40
 
 
 print "Running..."
@@ -48,24 +48,27 @@ now = datetime.datetime.now()
 dateTime = now.strftime(imageFileDateFormat)
 pictureFilename = "image-" + dateTime + ".jpg"
 pictureLocation = imageDirectory + pictureFilename
-objectKey = s3BucketPrefix + pictureFilename
+objectKey2 = s3BucketPrefix + pictureFilename
+objectKey = s3BucketPrefix + dateTime[0:4] + "/" + dateTime[4:6] + "/" + dateTime[6:8] + "/" + dateTime[8:10] + "/" + pictureFilename
+
 print "pictureFilename = ", pictureFilename
 print "pictureLocation = ", pictureLocation
 print "objectKey       = ", objectKey
+print "objectKey2      = ", objectKey2
 
 #filename = ""
 #filename = myCamera.takePictureFileCurrentDateTime()
 
 
 
-#myCamera.takePictureFile(pictureLocation)
+myCamera.takePictureFile(pictureLocation)
 
-#print "Uploading file ", pictureFilename, " to S3 bucket ", s3BucketName, " from location ", pictureLocation, " objectKey = ", objectKey
+print "Uploading file ", pictureFilename, " to S3 bucket ", s3BucketName, " from location ", pictureLocation, " objectKey = ", objectKey
 #myAwsS3.uploadFileToBucket(s3BucketName, filename)
-#myAwsS3.uploadFileToBucket2(s3BucketName, pictureLocation, objectKey)
-#print "S3 Upload complete..."
+myAwsS3.uploadFileToBucket2(s3BucketName, pictureLocation, objectKey)
+print "S3 Upload complete..."
 
-objectKey = "images/test3.jpg"
+#objectKey = "images/test3.jpg"
 
 print "Getting Rekognition labels for file/object ", objectKey, " in S3 bucket ", s3BucketName
 response = myAwsRek.detectLabels(s3BucketName, objectKey, labelConfidence)
@@ -77,7 +80,10 @@ for label in response['Labels']:
 for label in response['Labels']:
   label['Confidence'] = int(label['Confidence'])
 
-myAwsDDb.putLabelItem("20180921000101", response['Labels']);
+ddbKey = dateTime[0:14]
+print "ddbKey = ", ddbKey
+
+myAwsDDb.putLabelItem(ddbKey, response['Labels']);
 
 
 
