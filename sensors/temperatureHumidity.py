@@ -9,6 +9,13 @@ import grovepi
 blue = 0    # The Blue colored sensor.
 white = 1   # The White colored sensor.
 
+sensors = { 'sensors':
+            [
+              { "name": "temperature", "value": 0 },
+              { "name": "humidity",    "value": 0 }
+            ]
+          }
+
 class temperatureHumidity:
 
    def __init__(self, digitalPort):
@@ -43,4 +50,17 @@ class temperatureHumidity:
       return_values = [ temp, humidity ]
 
       return return_values;
+
+   def getValues2(self):
+      print("getting temperature and humidity values...")
+      return_values = []
+      # The first parameter is the port, the second parameter is the type of sensor.
+      [temp,humidity] = grovepi.dht(self.port,blue)
+      if math.isnan(temp) == False and math.isnan(humidity) == False:
+          print("temp = %.02f C humidity =%.02f%%"%(temp, humidity))
+
+      sensors['sensors'][0]['value'] = int(temp)
+      sensors['sensors'][1]['value'] = int(humidity)
+
+      return sensors;
 
