@@ -20,12 +20,17 @@ class awsDynamoDBHelper:
 
       print('Putting item into into LabelTable')
 
-      self.response = self.labelTable.put_item(
-        Item={
-          'datetime': datetime,
-          'itemList': itemList
-        }
-      )
+      try:
+        self.response = self.labelTable.put_item(
+          Item={
+            'datetime': datetime,
+            'itemList': itemList
+          }
+        )
+      except ClientError as e:
+          print(e.response['Error']['Message'])
+      else:
+        print("put_item succeeded")
 
       return self.response;
 
