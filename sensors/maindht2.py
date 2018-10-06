@@ -13,9 +13,9 @@ time.sleep(2)
 while True:
    try:
 
-      dhtValues = myDHT.getValues2()
+      dhtValues = myDHT.getValues()
       print dhtValues
-      time.sleep(.5)
+      time.sleep(.1)
 
    except IOError:
         print ("Error")

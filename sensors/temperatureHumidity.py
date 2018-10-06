@@ -11,8 +11,8 @@ white = 1   # The White colored sensor.
 
 sensors = { 'sensors':
             [
-              { "name": "temperature", "value": 0 },
-              { "name": "humidity",    "value": 0 }
+              { "name": "temperature", "value": 999 },
+              { "name": "humidity",    "value": 999 }
             ]
           }
 
@@ -27,40 +27,19 @@ class temperatureHumidity:
       print("destructor for light sensor port", self.port)
 #      grovepi.pinMode(self.port, "OUPUT")
 
-   def getValue(self):
-      print("getting light sensor value...")
-      # Get sensor value
-      sensor_value = grovepi.analogRead(self.port)
-
-      # Calculate resistance of sensor in K
-      resistance = (float)(1023 - sensor_value) * 10 / sensor_value
-
-      print("sensor_value = %d resistance = %.2f" %(sensor_value,  resistance))
-
-      return sensor_value;
-
    def getValues(self):
       print("getting temperature and humidity values...")
-      return_values = []
+      temp = 0.0
+      humidity = 0.0
       # The first parameter is the port, the second parameter is the type of sensor.
       [temp,humidity] = grovepi.dht(self.port,blue)
       if math.isnan(temp) == False and math.isnan(humidity) == False:
           print("temp = %.02f C humidity =%.02f%%"%(temp, humidity))
+          sensors['sensors'][0]['value'] = int(temp)
+          sensors['sensors'][1]['value'] = int(humidity)
+      else:
+          sensors['sensors'][0]['value'] = 999
+          sensors['sensors'][1]['value'] = 999
 
-      return_values = [ temp, humidity ]
-
-      return return_values;
-
-   def getValues2(self):
-      print("getting temperature and humidity values...")
-      return_values = []
-      # The first parameter is the port, the second parameter is the type of sensor.
-      [temp,humidity] = grovepi.dht(self.port,blue)
-      if math.isnan(temp) == False and math.isnan(humidity) == False:
-          print("temp = %.02f C humidity =%.02f%%"%(temp, humidity))
-
-      sensors['sensors'][0]['value'] = int(temp)
-      sensors['sensors'][1]['value'] = int(humidity)
-
-      return sensors;
+      return sensors
 
