@@ -3,11 +3,13 @@ sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/camera')
 sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/awsS3Helper')
 sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/awsRekognitionHelper')
 sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/awsDynamoDBHelper')
+sys.path.insert(0, sys.path[0]+'/home/pi/Neil/project/sensors')
 
 from camera import camera
 from awsS3Helper import awsS3Helper
 from awsRekognitionHelper import awsRekognitionHelper
 from awsDynamoDBHelper import awsDynamoDBHelper
+from sensors import barometricSensor
 
 import time
 import datetime
@@ -17,10 +19,12 @@ rootDirectory       = "/home/pi/Neil/project/"
 imageDirectory      = rootDirectory + "images/"
 videoDirectory      = rootDirectory + "video/"
 
-
 s3BucketName = "neil2-pi-bucket"
 s3BucketPrefix = "images/"
 labelConfidence = 40
+
+labelTableName  = "LabelTable"
+sensorTableName = "SensorTable"
 
 
 print "Running..."
@@ -37,9 +41,13 @@ myAwsS3 = awsS3Helper.awsS3Helper()
 print("Initialising AWS Rekognition...")
 myAwsRek = awsRekognitionHelper.awsRekognitionHelper()
 
-print("Initialising AWS DynamoDB...")
-myAwsDDb = awsDynamoDBHelper.awsDynamoDBHelper()
+print("Initialising AWS DynamoDB for LabelTable...")
+myAwsDDb_label = awsDynamoDBHelper.awsDynamoDBHelper(labelTableName)
 
+print("Initialising AWS DynamoDB for SensorTable...")
+myAwsDDb_sensor = awsDynamoDBHelper.awsDynamoDBHelper(sensorTableName)
+
+/*
 print "Sleeping 2..."
 #time.sleep(2)
 
@@ -83,7 +91,7 @@ for label in response['Labels']:
 ddbKey = dateTime[0:14]
 print "ddbKey = ", ddbKey
 
-myAwsDDb.putLabelItem(ddbKey, response['Labels']);
+myAwsDDb_label.putItem(ddbKey, response['Labels']);
 
 
 
@@ -105,6 +113,20 @@ myAwsDDb.putLabelItem(ddbKey, response['Labels']);
 #print('Detected celebrities ' + objectKey)
 #for label in response['CelebrityFaces']:
 #  print (label['Name'])
+
+*/
+
+print "reading sensors"
+
+print("Initialising barometric sensor...")
+i2cPort = 0x77
+myBarometer = barometricSensor(i2cPort)
+
+time.sleep(2)
+
+barometricValue = myBarometer.getValue()
+
+print "barometricValue = " + json.dumps(barometricValue)
 
 
 

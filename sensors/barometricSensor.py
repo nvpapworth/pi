@@ -39,9 +39,9 @@ class barometricSensor:
       print "Pressure : ", pressure, "hPa"
       print "Humidity : ", humidity, "%"
 
-      sensors['sensors'][0]['value'] = pressure
-      sensors['sensors'][1]['value'] = humidity
-      sensors['sensors'][2]['value'] = temperature
+      sensors['sensors'][0]['value'] = int(pressure)
+      sensors['sensors'][1]['value'] = int(humidity)
+      sensors['sensors'][2]['value'] = int(temperature)
 
       return sensors;
 

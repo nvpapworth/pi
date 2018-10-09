@@ -16,7 +16,7 @@ sensors = { 'sensors':
             ]
           }
 
-class temperatureHumidity:
+class temperatureHumiditySensor:
 
    def __init__(self, digitalPort):
       print("Initialising temperature and humidity sensor digital port", digitalPort)
