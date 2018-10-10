@@ -2,4 +2,4 @@
 *.pyc
 *.swp
 *.bak
-pi.log
+*.log
