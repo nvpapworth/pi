@@ -5,9 +5,9 @@ import math
 import grovepi
 import json
 
-sensors = { 'sensors': 
+sensors = { 'temperatureSensor':
             [
-              { "name": "temperature_v1.2", "value": 0 }
+              { "name": "temperature", "value": 0 }
             ]
           }
 
@@ -20,17 +20,17 @@ class temperatureSensor:
 
    def __del__(self):
       print("destructor for temperature sensor v1.2 port", self.port)
-      grovepi.pinMode(self.port, "OUPUT")
+      grovepi.pinMode(self.port, "OUTPUT")
 
    def getValue(self):
-      print("getting yemperature sensor v1.2 value...")
+      print("getting temperature sensor v1.2 value...")
 
       # Get sensor value
       temperature = grovepi.temp(self.port, '1.2')
 
       print("temperature = %.2f" %(temperature))
 
-      sensors['sensors'][0]['value'] = temperature
+      sensors['temperatureSensor'][0]['value'] = int(temperature)
 
       return sensors;
 

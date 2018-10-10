@@ -1,4 +1,5 @@
 from lightSensor import *
+import json
 import time
 
 lsPort = 1
@@ -13,11 +14,8 @@ time.sleep(2)
 while True:
    try:
 
-      lsValue = myLS.getValue()
-      time.sleep(.5)
-
-      lsValues = myLS.getValues()
-      print("RETURNED sensor_value = %d resistance = %.2f" %(lsValues[0],  lsValues[1]))
+      lsValues = myLS.getValue()
+      print "lsValues = " + json.dumps(lsValues)
       time.sleep(.5)
 
    except IOError:

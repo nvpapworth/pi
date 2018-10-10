@@ -5,10 +5,10 @@ import math
 import grovepi
 import atexit
 
-sensors = { 'sensors':
+sensors = { 'dustSensor':
             [
-              { "name": "newval", "value": 0 },
-              { "name": "dust", "value": 0 }
+              { "name": "newValue", "value": 0 },
+              { "name": "dustLevel", "value": 0 }
             ]
           }
 
@@ -31,7 +31,7 @@ class dustSensor:
    def __del__(self):
       print("destructor for dust sensor")
 
-   def getValues(self):
+   def getValue(self):
       print("getting dust values...")
 
 #      try:
@@ -39,8 +39,8 @@ class dustSensor:
 
       print("new_val = ", new_val, " lowpulseoccupancy = ", lowpulseoccupancy)
 
-      sensors['sensors'][0]['value'] = new_val
-      sensors['sensors'][1]['value'] = lowpulseoccupancy
+      sensors['dustSensor'][0]['value'] = new_val
+      sensors['dustSensor'][1]['value'] = lowpulseoccupancy
 
 
 #        if new_val:

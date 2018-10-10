@@ -5,10 +5,10 @@ import math
 import grovepi
 import json
 
-sensors = { 'sensors': 
+sensors = { 'airQualitySensor':
             [
-              { "name": "air_quality_value", "value": 0 },
-              { "name": "air_quality_status", "value": "" }
+              { "name": "airQualityValue", "value": 0 },
+              { "name": "airQualityStatus", "value": 0 }
             ]
           }
 
@@ -32,16 +32,16 @@ class airQualitySensor:
       print("quality = %.2f" %(quality))
 
       if quality > 700:
-          status = "HighPollution"
+          status = 2
       elif quality > 300:
-          status = "LowPollution"
+          status = 1
       else:
-          status = "AirFresh"
+          status = 0
 
       print("status = ", status)
 
-      sensors['sensors'][0]['value'] = quality
-      sensors['sensors'][1]['value'] = status
+      sensors['airQualitySensor'][0]['value'] = int(quality)
+      sensors['airQualitySensor'][1]['value'] = status
 
       return sensors;
 

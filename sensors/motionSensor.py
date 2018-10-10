@@ -5,9 +5,9 @@ import math
 import grovepi
 import json
 
-sensors = { 'sensors': 
+sensors = { 'motionSensor':
             [
-              { "name": "motion_detected", "value": "" }
+              { "name": "motionDetected", "value": "" }
             ]
           }
 
@@ -30,14 +30,7 @@ class motionSensor:
 
       print("motion = ", motion)
 
-      if motion:
-          status = "true"
-      else:
-          status = "false"
-
-      print("status = ", status)
-
-      sensors['sensors'][0]['value'] = status
+      sensors['motionSensor'][0]['value'] = motion
 
       return sensors;
 

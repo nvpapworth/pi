@@ -5,12 +5,12 @@ import math
 import grovepi
 import lsm303d
 
-sensors = { 'sensors':
+sensors = { 'accelerometerCompass6AxisSensor':
             [
-              { "name": "accelerometerX", "value": 0 },
-              { "name": "accelerometerY", "value": 0 },
-              { "name": "accelerometerZ", "value": 0 },
-              { "name": "compassHeading", "value": 0 }
+              { "name": "accelerometerX", "value": 999 },
+              { "name": "accelerometerY", "value": 999 },
+              { "name": "accelerometerZ", "value": 999 },
+              { "name": "compassHeading", "value": 999 }
             ]
           }
 
@@ -32,12 +32,12 @@ class accelerometerCompass6AxisSensor:
    def __del__(self):
       print("destructor for 6 axis accelerometer and compass sensor")
 
-   def getValues(self):
+   def getValue(self):
       print("getting 6 axis accelerometer and compass values...")
 
       if self.initOK == 0:
         print("Sensor failed to inialise, returning...")
-        return
+        return sensors
       
 #      try:
 
@@ -62,10 +62,10 @@ class accelerometerCompass6AxisSensor:
       print("Acceleration of X,Y,Z is %.3fg, %.3fg, %.3fg" %(acc[0], acc[1], acc[2]))
       print("Heading %.3f degrees\n" %(heading))
 
-      sensors['sensors'][0]['value'] = int(1000 * acc[0])
-      sensors['sensors'][1]['value'] = int(1000 * acc[1])
-      sensors['sensors'][2]['value'] = int(1000 * acc[2])
-      sensors['sensors'][3]['value'] = int(heading)
+      sensors['accelerometerCompass6AxisSensor'][0]['value'] = int(1000 * acc[0])
+      sensors['accelerometerCompass6AxisSensor'][1]['value'] = int(1000 * acc[1])
+      sensors['accelerometerCompass6AxisSensor'][2]['value'] = int(1000 * acc[2])
+      sensors['accelerometerCompass6AxisSensor'][3]['value'] = int(heading)
 
 #      except IOError:
 #        print ("Error")

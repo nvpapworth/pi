@@ -47,7 +47,6 @@ myAwsDDb_label = awsDynamoDBHelper.awsDynamoDBHelper(labelTableName)
 print("Initialising AWS DynamoDB for SensorTable...")
 myAwsDDb_sensor = awsDynamoDBHelper.awsDynamoDBHelper(sensorTableName)
 
-/*
 print "Sleeping 2..."
 #time.sleep(2)
 
@@ -113,22 +112,6 @@ myAwsDDb_label.putItem(ddbKey, response['Labels']);
 #print('Detected celebrities ' + objectKey)
 #for label in response['CelebrityFaces']:
 #  print (label['Name'])
-
-*/
-
-print "reading sensors"
-
-print("Initialising barometric sensor...")
-i2cPort = 0x77
-myBarometer = barometricSensor(i2cPort)
-
-time.sleep(2)
-
-barometricValue = myBarometer.getValue()
-
-print "barometricValue = " + json.dumps(barometricValue)
-
-
 
 
 print("exiting...")

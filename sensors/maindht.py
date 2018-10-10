@@ -14,8 +14,7 @@ time.sleep(2)
 while True:
    try:
 
-      dhtValues = myDHT.getValues()
-#      print("RETURNED temperature = %.02f C humidity = %.02f" %(dhtValues[0],  dhtValues[1]))
+      dhtValues = myDHT.getValue2()
       print "dhtValues = " + json.dumps(dhtValues)
       time.sleep(.5)
 

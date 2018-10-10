@@ -5,9 +5,9 @@ import math
 import grovepi
 import json
 
-sensors = { 'sensors': 
+sensors = { 'soundSensor':
             [
-              { "name": "sound_v1.6", "value": 0 }
+              { "name": "soundLevel", "value": 0 }
             ]
           }
 
@@ -30,7 +30,7 @@ class soundSensor:
 
       print("sound = %.2f" %(sound))
 
-      sensors['sensors'][0]['value'] = sound
+      sensors['soundSensor'][0]['value'] = int(sound)
 
       return sensors;
 

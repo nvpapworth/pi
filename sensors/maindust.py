@@ -12,7 +12,7 @@ time.sleep(2)
 while True:
    try:
 
-      dustValues = myDust.getValues()
+      dustValues = myDust.getValue()
       print "dustValues = " + json.dumps(dustValues)
       time.sleep(.5)
 

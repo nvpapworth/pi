@@ -12,7 +12,7 @@ time.sleep(2)
 while True:
    try:
 
-      acValues = myAC.getValues()
+      acValues = myAC.getValue()
       print "acValues = " + json.dumps(acValues)
       time.sleep(.5)
 

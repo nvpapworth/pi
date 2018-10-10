@@ -9,7 +9,7 @@ from camera import camera
 from awsS3Helper import awsS3Helper
 from awsRekognitionHelper import awsRekognitionHelper
 from awsDynamoDBHelper import awsDynamoDBHelper
-from sensors.barometricSensor import barometricSensor
+from sensors.sensors import sensors
 
 import time
 import json
@@ -34,30 +34,33 @@ now = datetime.datetime.now()
 print "datetime = ", now
 dateTime = now.strftime(imageFileDateFormat)
 
-print "Initialising AWS S3..."
-myAwsS3 = awsS3Helper.awsS3Helper()
+#print "Initialising AWS S3..."
+#myAwsS3 = awsS3Helper.awsS3Helper()
 
 print("Initialising AWS DynamoDB for SensorTable...")
 myAwsDDb_sensor = awsDynamoDBHelper.awsDynamoDBHelper(sensorTableName)
 
 
+print "main - initializing sensors"
+
+mySensors = sensors()
+mySensors.initializeSensors()
+
+
 print "reading sensors"
 
-print("Initialising barometric sensor...")
-i2cPort = 0x77
-myBarometer = barometricSensor(i2cPort)
+sensorValues = mySensors.getValues()
 
-time.sleep(2)
+dbRecord = { 'sensors': sensorValues }
 
-barometricValue = myBarometer.getValue()
-
-print "barometricValue = " + json.dumps(barometricValue)
+#print "dbRecord = " + json.dumps(dbRecord)
 
 
 ddbKey = dateTime[0:14]
 print "ddbKey = ", ddbKey
 
-myAwsDDb_sensor.putItem(ddbKey, barometricValue);
+#myAwsDDb_sensor.putItem(ddbKey, dbRecord);
+myAwsDDb_sensor.putItemNamed(ddbKey, 'sensors', sensorValues);
 
 
 print("exiting...")

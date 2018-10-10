@@ -13,7 +13,7 @@ time.sleep(2)
 while True:
    try:
 
-      dhtValues = myDHT.getValues()
+      dhtValues = myDHT.getValue()
       print dhtValues
       time.sleep(.1)
 

@@ -6,20 +6,20 @@ import grovepi
 import json
 import bme280
 
-sensors = { 'sensors': 
+sensors = { 'barometricSensor':
             [
-              { "name": "barometric_pressure", "value": 0 },
-              { "name": "barometric_humidity", "value": 0 },
-              { "name": "barometric_temperature", "value": 0 }
+              { "name": "barometricPressure", "value": 0 },
+              { "name": "barometricHumidity", "value": 0 },
+              { "name": "barometricTemperature", "value": 0 }
             ]
           }
 
-ids= { 'ids': 
-            [
-              { "name": "barometric_sensor_chip_id", "value": 0 },
-              { "name": "barometric_sensor_chip_version", "value": 0 }
-            ]
-          }
+ids = { 'barometricSensor':
+        [
+          { "name": "barometricSensorChipId", "value": 0 },
+          { "name": "barometricSensorChipVersion", "value": 0 }
+        ]
+      }
 
 class barometricSensor:
 
@@ -39,9 +39,9 @@ class barometricSensor:
       print "Pressure : ", pressure, "hPa"
       print "Humidity : ", humidity, "%"
 
-      sensors['sensors'][0]['value'] = int(pressure)
-      sensors['sensors'][1]['value'] = int(humidity)
-      sensors['sensors'][2]['value'] = int(temperature)
+      sensors['barometricSensor'][0]['value'] = int(pressure)
+      sensors['barometricSensor'][1]['value'] = int(humidity)
+      sensors['barometricSensor'][2]['value'] = int(temperature)
 
       return sensors;
 
@@ -54,8 +54,8 @@ class barometricSensor:
       print "Chip ID     :", chip_id
       print "Version     :", chip_version
 
-      ids['ids'][0]['value'] = chip_id
-      ids['ids'][1]['value'] = chip_version
+      ids['barometricSensor'][0]['value'] = chip_id
+      ids['barometricSensor'][1]['value'] = chip_version
 
       return ids;
 

@@ -39,7 +39,32 @@ class awsDynamoDBHelper:
       else:
         print("put_item succeeded")
 
-      print(self.response)
+#      print(self.response)
+
+      return self.response;
+
+   def putItemNamed(self, recorddatetime, fieldName, fieldValue):
+
+      print('Putting named item ', fieldName, ' into into table ', self.tableName)
+
+      self.response = ""
+
+      try:
+        self.response = self.table.put_item(
+          Item={
+            'recorddatetime': recorddatetime,
+            fieldName: fieldValue
+          }
+        )
+
+      except Exception as e:
+        print("put_item failed")
+        print(e)
+
+      else:
+        print("put_item succeeded")
+
+#      print(self.response)
 
       return self.response;
 

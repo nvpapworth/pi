@@ -7,7 +7,7 @@ motionPort = 5
 
 print("running")
 print("Initialising motion sensor...")
-mySound = motionSensor(motionPort)
+myMotion = motionSensor(motionPort)
 
 print("sleeping 2...")
 time.sleep(2)
@@ -15,7 +15,7 @@ time.sleep(2)
 while True:
    try:
 
-      motionValue = mySound.getValue()
+      motionValue = myMotion.getValue()
 
       print "motionValue = " + json.dumps(motionValue)
 
