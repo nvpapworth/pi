@@ -66,10 +66,10 @@ class sensors:
       soundSensorAnaloguePort = 2
       self.mySound = soundSensor(soundSensorAnaloguePort)
 
-      print("Initializing temperature sensor...")
+#      print("Initializing temperature sensor...")
       # Analogue port
-      temperatureSensorAnaloguePort = 0
-      self.myTemp = temperatureSensor(temperatureSensorAnaloguePort)
+#      temperatureSensorAnaloguePort = 0
+#      self.myTemp = temperatureSensor(temperatureSensorAnaloguePort)
 
       success = 1
 
@@ -104,15 +104,16 @@ class sensors:
       print("Reading sound sensor...")
       reading8 = self.mySound.getValue()
 
-      print("Reading temperature sensor...")
-      reading9 = self.myTemp.getValue()
-
+#      print("Reading temperature sensor...")
+#      reading9 = self.myTemp.getValue()
 
       print("Reading temperature and humidity sensor v2...")
       reading10 = self.myDHT.getValue2()
 
+#      y = dict ( reading1.items() + reading2.items() + reading3.items() + reading4.items() + reading5.items() +
+#                 reading6.items() + reading7.items() + reading8.items() + reading9.items() + reading10.items() )
       y = dict ( reading1.items() + reading2.items() + reading3.items() + reading4.items() + reading5.items() +
-                 reading6.items() + reading7.items() + reading8.items() + reading9.items() + reading10.items() )
+                 reading6.items() + reading7.items() + reading8.items() + reading10.items() )
 
       print "y = " + json.dumps(y)
 

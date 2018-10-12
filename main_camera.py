@@ -15,7 +15,7 @@ import time
 import datetime
 
 imageFileDateFormat = "%Y%m%d%H%M%S.%f"
-rootDirectory       = "/home/pi/Neil/project/"
+rootDirectory       = "/home/pi/Neil/project/pi/"
 imageDirectory      = rootDirectory + "images/"
 videoDirectory      = rootDirectory + "video/"
 

@@ -45,12 +45,12 @@ class accelerometerCompass6AxisSensor:
       acc = self.acc_mag.getRealAccel()
 
       # Check for compass being ready
-      if acc_mag.isMagReady():
+      if self.acc_mag.isMagReady():
 
         print("Compass is ready");
 
         # Read the heading
-        heading = acc_mag.getHeading()
+        heading = self.acc_mag.getHeading()
 
       else:
 
