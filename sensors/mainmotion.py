@@ -2,8 +2,8 @@ from motionSensor import *
 import json
 import time
 
-# Analogue port
-motionPort = 5
+# Digital port
+motionPort = 7
 
 print("running")
 print("Initialising motion sensor...")

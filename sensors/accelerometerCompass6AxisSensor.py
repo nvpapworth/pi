@@ -14,29 +14,34 @@ sensors = { 'accelerometerCompass6AxisSensor':
             ]
           }
 
+sensors3 = { "accelerometerCompass6AxisSensor.accelerometerX": 999,
+             "accelerometerCompass6AxisSensor.accelerometerY": 999,
+             "accelerometerCompass6AxisSensor.accelerometerZ": 999,
+             "accelerometerCompass6AxisSensor.compassHeading": 999 } 
+
 class accelerometerCompass6AxisSensor:
 
    def __init__(self):
-      print("Initialising 6 axis accelerometer and compass sensor")
+      print "Initialising 6 axis accelerometer and compass sensor"
 
       try:
-        print("Initialising LSM303D...")
+        print "Initialising LSM303D..."
         self.acc_mag = lsm303d.lsm303d()
         self.initOK = 1
 
       except:
-        print("FAILED TO INITIALISE")
+        print "FAILED TO INITIALISE"
         self.initOK = 0
 
 
    def __del__(self):
-      print("destructor for 6 axis accelerometer and compass sensor")
+      print "destructor for 6 axis accelerometer and compass sensor"
 
    def getValue(self):
-      print("getting 6 axis accelerometer and compass values...")
+      print "getting 6 axis accelerometer and compass values..."
 
       if self.initOK == 0:
-        print("Sensor failed to inialise, returning...")
+        print "Sensor failed to inialise, returning..."
         return sensors
       
 #      try:
@@ -47,20 +52,20 @@ class accelerometerCompass6AxisSensor:
       # Check for compass being ready
       if self.acc_mag.isMagReady():
 
-        print("Compass is ready");
+        print "Compass is ready"
 
         # Read the heading
         heading = self.acc_mag.getHeading()
 
       else:
 
-        print("Compass is NOT ready");
+        print "Compass is NOT ready"
 
         heading = 360;
 
 
-      print("Acceleration of X,Y,Z is %.3fg, %.3fg, %.3fg" %(acc[0], acc[1], acc[2]))
-      print("Heading %.3f degrees\n" %(heading))
+      print "Acceleration of X,Y,Z is %.3fg, %.3fg, %.3fg" %(acc[0], acc[1], acc[2])
+      print "Heading %.3f degrees\n" %(heading)
 
       sensors['accelerometerCompass6AxisSensor'][0]['value'] = int(1000 * acc[0])
       sensors['accelerometerCompass6AxisSensor'][1]['value'] = int(1000 * acc[1])
@@ -68,7 +73,47 @@ class accelerometerCompass6AxisSensor:
       sensors['accelerometerCompass6AxisSensor'][3]['value'] = int(heading)
 
 #      except IOError:
-#        print ("Error")
+#        print "Error"
 
       return sensors
+
+   def getValue3(self):
+      print "getting 6 axis accelerometer and compass values v3..."
+
+      if self.initOK == 0:
+        print "Sensor failed to inialise, returning..."
+        return sensors3
+      
+#      try:
+
+      # Get accelerometer values
+      acc = self.acc_mag.getRealAccel()
+
+      # Check for compass being ready
+      if self.acc_mag.isMagReady():
+
+        print "Compass is ready"
+
+        # Read the heading
+        heading = self.acc_mag.getHeading()
+
+      else:
+
+        print "Compass is NOT ready"
+
+        heading = 360;
+
+
+      print "Acceleration of X,Y,Z is %.3fg, %.3fg, %.3fg" %(acc[0], acc[1], acc[2])
+      print "Heading %.3f degrees\n" %(heading)
+
+      sensors3["accelerometerCompass6AxisSensor.accelerometerX"] = int(1000 * acc[0])
+      sensors3["accelerometerCompass6AxisSensor.accelerometerY"] = int(1000 * acc[1])
+      sensors3["accelerometerCompass6AxisSensor.accelerometerZ"] = int(1000 * acc[2])
+      sensors3["accelerometerCompass6AxisSensor.compassHeading"] = int(heading)
+
+#      except IOError:
+#        print ("Error")
+
+      return sensors3
 

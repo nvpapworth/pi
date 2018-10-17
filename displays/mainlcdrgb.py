@@ -27,3 +27,5 @@ myLcd.clearScreen()
 myLcd.setText_norefresh("X\nX")
 time.sleep(2)
 
+myLcd.clearScreen()
+myLcd.setRGB(0,0,0)
