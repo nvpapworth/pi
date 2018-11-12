@@ -57,6 +57,11 @@ class fourDigitDisplay:
       grovepi.fourDigit_on(self.port)
       return;
 
+   def setOff(self):
+      print("set four digit display off")
+      grovepi.fourDigit_off(self.port)
+      return;
+
    def monitorAnalogue(self, analoguePort, duration):
       print("monitor analogue port", analoguePort, "for ", duration, "seconds")
       grovepi.fourDigit_monitor(self.port, analoguePort, duration)

@@ -36,7 +36,7 @@ class sensors:
 
       print("Initializing air quality sensor...")
       # Analogue port
-      airQualitySensorAnaloguePort = 1
+      airQualitySensorAnaloguePort = 0
       self.myAirQuality = airQualitySensor(airQualitySensorAnaloguePort)
 
       print("Initializing barometric sensor...")
@@ -58,7 +58,7 @@ class sensors:
 
       print("Initializing motion sensor...")
       # Analogue port
-      motionSensorAnaloguePort = 5
+      motionSensorAnaloguePort = 7
       self.myMotion = motionSensor(motionSensorAnaloguePort)
 
       print("Initializing sound sensor...")
@@ -155,30 +155,39 @@ class sensors:
 
    def getValues3(self):
       print("Reading sensor values v3...")
+      time.sleep(2)
 
       print("Reading accelerometer and Compass 6 Axis sensor...")
       reading1 = self.myAccCompass6Axis.getValue3()
+      time.sleep(2)
 
       print("Reading air quality sensor...")
       reading2 = self.myAirQuality.getValue3()
+      time.sleep(2)
 
       print("Reading barometric sensor...")
       reading3 = self.myBarometer.getValue3()
+      time.sleep(2)
 
       print("Reading temperature and humidity sensor...")
       reading4 = self.myDHT.getValue3()
+      time.sleep(2)
 
       print("Reading dust sensor...")
       reading5 = self.myDust.getValue3()
+      time.sleep(2)
 
       print("Reading light sensor...")
       reading6 = self.myLight.getValue3()
+      time.sleep(2)
 
       print("Reading motion sensor...")
       reading7 = self.myMotion.getValue3()
+      time.sleep(2)
 
       print("Reading sound sensor...")
       reading8 = self.mySound.getValue3()
+      time.sleep(2)
 
 #      print("Reading temperature sensor...")
 #      reading9 = self.myTemp.getValue3()

@@ -19,6 +19,10 @@ class soundSensor:
       print "Initialising sound sensor v1.6 analogue port", analoguePort
       self.port = analoguePort
       grovepi.pinMode(self.port, "INPUT")
+      print "Initiating sleep and read and sleep..."
+      time.sleep(1)
+      self.getValue3()
+      time.sleep(2)
 
    def __del__(self):
       print "destructor for sound sensor v1.6 port", self.port
@@ -40,6 +44,10 @@ class soundSensor:
       print "getting sound sensor v1.6 value v3..."
 
       # Get sensor value
+      sound = grovepi.analogRead(self.port)
+      print "sound = %.2f" %(sound)
+
+      time.sleep(2)
       sound = grovepi.analogRead(self.port)
 
       print "sound = %.2f" %(sound)

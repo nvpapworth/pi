@@ -10,12 +10,12 @@ print("Initialising sound sensor...")
 mySound = soundSensor(soundPort)
 
 print("sleeping 2...")
-time.sleep(2)
+#time.sleep(2)
 
 while True:
    try:
 
-      soundValue = mySound.getValue()
+      soundValue = mySound.getValue3()
 
       print "soundValue = " + json.dumps(soundValue)
 
