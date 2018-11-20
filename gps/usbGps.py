@@ -5,14 +5,14 @@ import re
 import json
 from decimal import *
 
-#en_debug = False
-en_debug = 1
+en_debug = False
+#en_debug = 1
 
 def debug(in_str):
     if en_debug:
         print(in_str)
 
-patterns=["$GPGGA",
+patterns_gpgga=["$GPGGA",
     "/[0-9]{6}\.[0-9]{2}/", # timestamp hhmmss.ss
     "/[0-9]{4}.[0-9]{2,/}", # latitude of position
     "/[NS]",  # North or South
@@ -34,7 +34,12 @@ patterns_gprmc=["$GPRMC",
     "/[EW]",  # East or West
     "/[0-9]+\.[0-9]*/", # Speed Over Ground x.x
     "/[0-9]+\.[0-9]*/", # Course Over Ground x.x
-    "/[0-9]{6}/" # Date ddmmyy
+    "/[0-9]{6}/", # Date ddmmyy
+    ]
+
+patterns_gpgsa=["$GPGSA",
+    "/[MA]",  # Mode 1 - M=Manual, A=2D Automatic
+    "/[123]" # Mode 2 - 1=Fix not available, 2=2D (less than 4 SVs used), 3=3D (more than 3 SVs used)
     ]
 
 
@@ -67,6 +72,25 @@ gpsRMC = { "gpsRMC.utcTime": "000000.000",
            "gpsRMC.mode": "X" }
 
 
+gpsGSA = { "gpsGSA.mode1": "X",
+           "gpsGSA.mode2": "X",
+           "gpsGSA.satelliteUsed01": "99",
+           "gpsGSA.satelliteUsed02": "99",
+           "gpsGSA.satelliteUsed03": "99",
+           "gpsGSA.satelliteUsed04": "99",
+           "gpsGSA.satelliteUsed05": "99",
+           "gpsGSA.satelliteUsed06": "99",
+           "gpsGSA.satelliteUsed07": "99",
+           "gpsGSA.satelliteUsed08": "99",
+           "gpsGSA.satelliteUsed09": "99",
+           "gpsGSA.satelliteUsed10": "99",
+           "gpsGSA.satelliteUsed11": "99",
+           "gpsGSA.satelliteUsed12": "99",
+           "gpsGSA.PDOP": "9.9",
+           "gpsGSA.HDOP": "9.9",
+           "gpsGSA.VDOP": "9.9" }
+
+
 geoip = { "lat": 12.345678, 
           "lon": -123.4567890 }
 
@@ -91,16 +115,21 @@ class usbGps:
       self.raw_line = ""
       self.gga = []
       self.rmc = []
-      self.validation =[] # contains compiled regex
+      self.validation_gpgga =[] # contains compiled regex
       self.validation_gprmc =[] # contains compiled regex
+      self.validation_gpgsa =[] # contains compiled regex
 
       # compile regex once to use later
-      for i in range(len(patterns)-1):
-         self.validation.append(re.compile(patterns[i]))
+      for i in range(len(patterns_gpgga)-1):
+         self.validation_gpgga.append(re.compile(patterns_gpgga[i]))
 
       # compile regex once to use later
       for i in range(len(patterns_gprmc)-1):
          self.validation_gprmc.append(re.compile(patterns_gprmc[i]))
+
+      # compile regex once to use later
+      for i in range(len(patterns_gpgsa)-1):
+         self.validation_gpgsa.append(re.compile(patterns_gpgsa[i]))
 
       self.clean_data()
 
@@ -167,8 +196,8 @@ class usbGps:
 
       if valid:
 #         return self.gga
-#         return gpsGGAFixedData
-         return geoip4
+         return gpsGGAFixedData
+#         return geoip4
       else:
          self.clean_data()
          return []
@@ -183,14 +212,18 @@ class usbGps:
       if in_line == "":
          return False
 
-      if in_line[:6] == "$ZPGGA":
+      if in_line[:6] == "$GPGGA":
          gp_status = self.process_gpgga(in_line)
          return gp_status
       elif in_line[:6] == "$GPRMC":
          gp_status = self.process_gprmc(in_line)
          return gp_status
+      elif in_line[:6] == "$GPGSA":
+         gp_status = self.process_gpgsa(in_line)
+         return gp_status
       else:
          return False
+
 
    def process_gprmc(self, in_line):
       print "$GPRMC record read ", in_line
@@ -208,6 +241,9 @@ class usbGps:
          debug ("Failed: wrong number of GPRMC parameters ")
          debug (self.rmc)
          return False
+
+#      for i in range(len(self.rmc)):
+#         print "rmc[", i, "] = ", self.rmc[i]
 
       for i in range(len(self.validation_gprmc)-1):
          if len(self.rmc[i]) == 0:
@@ -230,6 +266,7 @@ class usbGps:
          self.speedOverGround = float(self.rmc[7])
          self.courseOverGround = float(self.rmc[8])
          self.date = self.rmc[9]
+         self.mode = self.rmc[12][0]
 
          self.latitude = self.lat // 100 + self.lat % 100 / 60
 
@@ -250,16 +287,100 @@ class usbGps:
          gpsRMC["gpsRMC.speedOverGround"] = self.speedOverGround
          gpsRMC["gpsRMC.courseOverGround"] = self.courseOverGround
          gpsRMC["gpsRMC.date"] = self.date
-         gpsRMC["gpsRMC.mode"] = self.rmc[12]
+         gpsRMC["gpsRMC.mode"] = self.mode
 
 
       except ValueError:
          debug( "FAILED: invalid value")
 
-      print "Got here, GPRMC PASSED ! gpsRMC=", gpsRMC
+#      print "Got here, GPRMC PASSED ! gpsRMC=", gpsRMC
+      print (json.dumps(gpsRMC))
+      print "\n"
 
       return True
 
+
+
+   def process_gpgsa(self, in_line):
+      print "$GPGSA record read ", in_line
+      self.gsa = in_line.split(",")
+      debug (self.gsa)
+
+      # Sometimes multiple GPS data packets come into the stream. Take the data only after the last '$GPGSA' is seen
+      try:
+         ind=self.gsa.index('$GPGSA', 5, len(self.gsa))
+         self.gsa=self.gsa[ind:]
+      except ValueError:
+         pass
+
+      if len(self.gsa) != 18:
+         debug ("Failed: wrong number of parameters ")
+         debug (self.gsa)
+         return False
+
+#      for i in range(len(self.gsa)):
+#         print "gsa[", i, "] = ", self.gsa[i]
+
+      for i in range(len(self.validation_gpgsa)-1):
+         if len(self.gsa[i]) == 0:
+            debug ("Failed: empty string %d"%i)
+            return False
+         test = self.validation_gpgsa[i].match(self.gsa[i])
+         if test == False:
+            debug ("Failed: wrong format on parameter %d"%i)
+            return False
+         else:
+            debug("Passed %d"%i)
+
+      try:
+         self.mode1 = self.gsa[1]
+         self.mode2 = self.gsa[2]
+
+         self.satelliteUsed01 = self.gsa[3]
+         self.satelliteUsed02 = self.gsa[4]
+         self.satelliteUsed03 = self.gsa[5]
+         self.satelliteUsed04 = self.gsa[6]
+         self.satelliteUsed05 = self.gsa[7]
+         self.satelliteUsed06 = self.gsa[8]
+         self.satelliteUsed07 = self.gsa[9]
+         self.satelliteUsed08 = self.gsa[10]
+         self.satelliteUsed09 = self.gsa[11]
+         self.satelliteUsed10 = self.gsa[12]
+         self.satelliteUsed11 = self.gsa[13]
+         self.satelliteUsed12 = self.gsa[14]
+
+         self.PDOP = float(self.gsa[15])
+         self.HDOP = float(self.gsa[16])
+         self.VDOP = float(self.gsa[17][0:3])
+
+         gpsGSA["gpsGSA.mode1"] = self.mode1
+         gpsGSA["gpsGSA.mode2"] = self.mode2
+
+         gpsGSA["gpsGSA.satelliteUsed01"] = self.satelliteUsed01
+         gpsGSA["gpsGSA.satelliteUsed02"] = self.satelliteUsed02
+         gpsGSA["gpsGSA.satelliteUsed03"] = self.satelliteUsed03
+         gpsGSA["gpsGSA.satelliteUsed04"] = self.satelliteUsed04
+         gpsGSA["gpsGSA.satelliteUsed05"] = self.satelliteUsed05
+         gpsGSA["gpsGSA.satelliteUsed06"] = self.satelliteUsed06
+         gpsGSA["gpsGSA.satelliteUsed07"] = self.satelliteUsed07
+         gpsGSA["gpsGSA.satelliteUsed08"] = self.satelliteUsed08
+         gpsGSA["gpsGSA.satelliteUsed09"] = self.satelliteUsed09
+         gpsGSA["gpsGSA.satelliteUsed10"] = self.satelliteUsed10
+         gpsGSA["gpsGSA.satelliteUsed11"] = self.satelliteUsed11
+         gpsGSA["gpsGSA.satelliteUsed12"] = self.satelliteUsed12
+
+         gpsGSA["gpsGSA.PDOP"] = self.PDOP
+         gpsGSA["gpsGSA.HDOP"] = self.HDOP
+         gpsGSA["gpsGSA.VDOP"] = self.VDOP
+
+      except ValueError:
+         debug( "FAILED: invalid value")
+
+#      print "Got here, GPGSA PASSED ! gpsGSA=", gpsGSA
+      print (json.dumps(gpsGSA))
+      print "\n"
+
+      return True
 
 
    def process_gpgga(self, in_line):
@@ -279,11 +400,11 @@ class usbGps:
          debug (self.gga)
          return False
 
-      for i in range(len(self.validation)-1):
+      for i in range(len(self.validation_gpgga)-1):
          if len(self.gga[i]) == 0:
             debug ("Failed: empty string %d"%i)
             return False
-         test = self.validation[i].match(self.gga[i])
+         test = self.validation_gpgga[i].match(self.gga[i])
          if test == False:
             debug ("Failed: wrong format on parameter %d"%i)
             return False
@@ -312,9 +433,11 @@ class usbGps:
 
 
          gpsGGAFixedData["gpsGGA.utcTime"] = self.timestamp
-         gpsGGAFixedData["gpsGGA.latitude"] = str(self.latitude)
+#         gpsGGAFixedData["gpsGGA.latitude"] = str(self.latitude)
+         gpsGGAFixedData["gpsGGA.latitude"] = self.latitude
          gpsGGAFixedData["gpsGGA.NSIndicator"] = self.NS
-         gpsGGAFixedData["gpsGGA.Longitude"] = str(self.longitude)
+#         gpsGGAFixedData["gpsGGA.Longitude"] = str(self.longitude)
+         gpsGGAFixedData["gpsGGA.Longitude"] = self.longitude
          gpsGGAFixedData["gpsGGA.EWIndicator"] = self.EW
          gpsGGAFixedData["gpsGGA.positionFixIndicator"] = self.quality
          gpsGGAFixedData["gpsGGA.satellitesUsed"] = self.satellites
@@ -335,26 +458,32 @@ class usbGps:
 #         geoip2["lat"] = str(self.latitude)
 #         geoip2["lon"] = str(str(self.longitude))
 
-         gpsGGAFixedData["geo.coordinates"] = geoip2
-         gpsGGAFixedData["geoip.location"] = geoip3
-         gpsGGAFixedData["location"] = geoip4
+#         gpsGGAFixedData["geo.coordinates"] = geoip2
+#         gpsGGAFixedData["geoip.location"] = geoip3
+#         gpsGGAFixedData["location"] = geoip4
 
 
       except ValueError:
          debug( "FAILED: invalid value")
 
+      print (json.dumps(gpsGGAFixedData))
+      print "\n"
+
       return True
+
 
 
 if __name__ =="__main__":
     gps = usbGps("/dev/ttyUSB0", 4800, 0)
-    time.sleep(1)
-    in_data = gps.read()
+    while True:
+
+      time.sleep(1)
+      in_data = gps.read()
     if in_data != []:
 #      print (in_data)
 #      print "gpsGGAFixedData = " + json.dumps(gpsGGAFixedData)
-      print "gpsGGAFixedData = ", gpsGGAFixedData
-#      print "geoip = " + json.dumps(geoip)
-      print "geoip2 = ", geoip2
+        print "gpsGGAFixedData = ", gpsGGAFixedData
+        print "geoip = " + json.dumps(geoip)
+        print "geoip2 = ", geoip2
 
 
