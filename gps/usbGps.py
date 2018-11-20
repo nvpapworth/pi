@@ -266,7 +266,7 @@ class usbGps:
          self.speedOverGround = float(self.rmc[7])
          self.courseOverGround = float(self.rmc[8])
          self.date = self.rmc[9]
-         self.mode = self.rmc[12][0]
+         self.mode = self.rmc[12].split('*')[0]
 
          self.latitude = self.lat // 100 + self.lat % 100 / 60
 
@@ -351,7 +351,7 @@ class usbGps:
 
          self.PDOP = float(self.gsa[15])
          self.HDOP = float(self.gsa[16])
-         self.VDOP = float(self.gsa[17][0:3])
+         self.VDOP = float(self.gsa[17].split('*')[0])
 
          gpsGSA["gpsGSA.mode1"] = self.mode1
          gpsGSA["gpsGSA.mode2"] = self.mode2
@@ -447,7 +447,7 @@ class usbGps:
          gpsGGAFixedData["gpsGGA.geoidSeparation.value"] = self.gga[11]
          gpsGGAFixedData["gpsGGA.geoidSeparation.units"] = self.gga[12]
 #         gpsGGAFixedData["gpsGGA.ageOfDiffCorr"] = self.gga[13]
-         gpsGGAFixedData["gpsGGA.diffRefStationId"] = self.gga[14]
+         gpsGGAFixedData["gpsGGA.diffRefStationId"] = self.gga[14].split('*')[0]
 
          geoip2["lat"] = Decimal(str(self.latitude))
          geoip2["lon"] = Decimal(str(self.longitude))
